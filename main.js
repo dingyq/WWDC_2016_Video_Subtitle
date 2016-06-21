@@ -8,11 +8,11 @@ var fx = require('fs-extra');
 var fs = require('fs');
 var sutil = require('./subtitle_util');
 
-var videoLinksFile = "WWDC2015_links.txt";
+var videoLinksFile = "WWDC2016_links.txt";
 var subtitlesFolderForHD = "subtitles/HD/";
 var subtitlesFolderForSD = "subtitles/SD/";
 
-var videoURLRegex = /(http:\/\/devstreaming.apple.com\/videos\/wwdc\/2015\/\w+\/\d+\/)(\w+)\.mp4\?dl=1/;
+var videoURLRegex = /(http:\/\/devstreaming.apple.com\/videos\/wwdc\/2016\/\w+\/\d+\/)(\w+)\.mp4\?dl=1/;
 async.waterfall([
     //read links file
     function(callback) {
@@ -20,7 +20,7 @@ async.waterfall([
             if (err) throw err;
             var lines = data.split("\n");
             var links = lines.filter(function (line) {
-                return line && line.length > 0;
+                return line && line.length > 0 && line.indexOf('.mp4') !== -1;
             });
             callback(null, links);
         });
@@ -32,6 +32,7 @@ async.waterfall([
 
         callback(null, videoURLs.map(function(url) {
             var group = url.match(videoURLRegex);
+            //console.log(group);
             if (group) {
                 return {
                     videoURL: group[0],
@@ -51,7 +52,9 @@ async.waterfall([
 
     //check if subtitle file has been downloaded, if so, mark skip to true
     function(videoInfos, callback) {
+
         videoInfos.forEach(function (videoInfo) {
+            console.log(videoInfo);
             videoInfo.skip = fs.existsSync(videoInfo.subtitleNameForHD) && fs.existsSync(videoInfo.subtitleNameForSD);
         });
         callback(null, videoInfos);
@@ -101,7 +104,7 @@ async.waterfall([
                                 webvttFilesLines = webvttFilesLines.concat(lines);
                                 callback(null, webvttFilesLines);
                             } else {
-                                videoInfo.errorMessage = errorMessage;
+                                videoInfo.errorMessage = err;
                                 callback(errorMessage, null);
                             }
                         });
