@@ -105,7 +105,7 @@ async.waterfall([
                                 callback(null, webvttFilesLines);
                             } else {
                                 videoInfo.errorMessage = err;
-                                callback(errorMessage, null);
+                                callback(err, null);
                             }
                         });
                     }, function (err, webvttFilesLines) {
