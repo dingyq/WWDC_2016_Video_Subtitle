@@ -109,7 +109,7 @@ async.waterfall([
                             }
                         });
                     }, function (err, webvttFilesLines) {
-                        if (webvttFilesLines.length > 0) {
+                        if (webvttFilesLines && webvttFilesLines.length > 0) {
                             webvttFilesLines = webvttFilesLines.filter(function (line) {
                                 //remove webvtt file header, they're useless
                                 return line.indexOf("WEBVTT") !== 0 && line.indexOf("X-TIMESTAMP-MAP") !== 0;
@@ -132,6 +132,8 @@ async.waterfall([
                                     });
                                 }
                             });
+                        } else {
+                            console.log(err);
                         }
                     });
                 })(videoInfo);
